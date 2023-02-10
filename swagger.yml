@@ -1,0 +1,248 @@
+openapi: 3.0.3
+info:
+  title: Express Example
+  version: 1.0.0
+servers:
+  - url: http://localhost:${PORT}
+tags:
+  - name: Unauthorized
+    description: 로그인 전
+  - name: Authorized
+    description: 로그인 후
+paths:
+  /api/v1/users:
+    post:
+      tags:
+        - Unauthorized
+      summary: 사용자 생성
+      requestBody:
+        description: 가입 정보
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - password
+              properties:
+                userId:
+                  type: string
+                  example: testuser
+                  description: 사용자 아이디
+                password:
+                  type: string
+                  example: 'qwe123!@#'
+                  description: 사용자 비밀번호
+                userName:
+                  type: string
+                  example: test
+                  description: 사용자 이름
+        required: true
+      responses:
+        '200':
+          description: 사용자 생성 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo'
+        '409':
+          description: 중복 아이디 존재
+        '500':
+          description: 서버 에러
+  /api/v1/users/{uuid}:
+    get:
+      tags:
+        - Unauthorized
+      summary: 사용자 조회
+      parameters:
+        - name: uuid
+          in: path
+          description: 사용자 UUID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 사용자 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo'
+  /api/v1/login:
+    post:
+      tags:
+        - Unauthorized
+      summary: 로그인
+      requestBody:
+        description: 로그인 정보
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - password
+              properties:
+                userId:
+                  type: string
+                  example: testuser
+                  description: 사용자 아이디
+                password:
+                  type: string
+                  example: 'qwe123!@#'
+                  description: 사용자 비밀번호
+        required: true
+      responses:
+        '200':
+          description: 로그인 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userInfo:
+                    $ref: '#/components/schemas/UserInfo'
+                  tokens:
+                    $ref: '#/components/schemas/Tokens'
+        '401':
+          description: 로그인 실패
+        '500':
+          description: 서버 에러
+  /api/v1/auth/users:
+    put:
+      tags:
+        - Authorized
+      summary: 본인 사용자 정보 수정
+      requestBody:
+        description: 새 사용자 정보
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - password
+              properties:
+                password:
+                  type: string
+                  example: 'qwe123!@#'
+                  description: 기존 비밀번호
+                newPassword:
+                  type: string
+                  example: 'asd456$%^'
+                  description: 새 비밀번호
+                userName:
+                  type: string
+                  example: test2
+                  description: 새 사용자 이름
+        required: true
+      responses:
+        '200':
+          description: 사용자 정보 수정 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo'
+        '401':
+          description: 인증 실패
+        '403':
+          description: 기존 비밀번호 불일치
+        '500':
+          description: 서버 에러
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Authorized
+      summary: 사용자 정보 삭제
+      responses:
+        '200':
+          description: 사용자 정보 삭제 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                description: 사용자 정보
+                properties:
+                  userId:
+                    type: string
+                    example: testuser
+                    description: 사용자 아이디
+                  userName:
+                    type: string
+                    example: test
+                    description: 사용자 이름
+                  registerDate:
+                    type: string
+                    example: '2023-02-08T14:52:56Z'
+                    description: 가입 날짜
+        '400':
+          description: 요청 에러
+        '401':
+          description: 인증 실패
+        '500':
+          description: 서버 에러
+      security:
+        - bearerAuth: []
+  /api/v1/auth/token:
+    get:
+      tags:
+        - Authorized
+      summary: Access 토큰 갱신
+      description: Authorization 헤더에 Refresh 토큰 필요
+      responses:
+        '200':
+          description: Access 토큰 갱신 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userInfo:
+                    $ref: '#/components/schemas/UserInfo'
+                  tokens:
+                    $ref: '#/components/schemas/Tokens'
+        '401':
+          description: 유효하지 않은 Refresh 토큰
+        '500':
+          description: 서버 에러
+      security:
+        - bearerAuth: []
+components:
+  schemas:
+    UserInfo:
+      type: object
+      description: 사용자 정보
+      properties:
+        uuid:
+          type: string
+          example: 83182ee5bfa542ed8e5266dc4af565ca
+          description: 사용자 UUID
+        userId:
+          type: string
+          example: testuser
+          description: 사용자 아이디
+        userName:
+          type: string
+          example: test
+          description: 사용자 이름
+        registerDate:
+          type: string
+          example: '2023-02-08T14:52:56Z'
+          description: 가입 날짜
+    Tokens:
+      type: object
+      description: Access/Refresh 토큰 정보
+      properties:
+        accessToken:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzVG9rZW4iLCJ1c2VySW5mbyI6eyJ1dWlkIjoiZTk5ZjM5Y2U0NjUxNGY2MGJmZDZiOGI0NjM2ZjQ2ZWEiLCJ1c2VySWQiOiJ0ZXN0dXNlciJ9LCJpYXQiOjE2NzU5MzE3MjcsImV4cCI6MTY3NTkzNTMyN30.y1MpHjq9Bp7BCVcT7RCHRWvYp1qUlkimkO1wd3p4MDk
+          description: Access 토큰
+        refreshToken:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoicmVmcmVzaFRva2VuIiwidXNlckluZm8iOnsidXVpZCI6ImU5OWYzOWNlNDY1MTRmNjBiZmQ2YjhiNDYzNmY0NmVhIiwidXNlcklkIjoidGVzdHVzZXIifSwiaWF0IjoxNjc1OTMxNzI3LCJleHAiOjE2NzYxOTA5Mjd9.boau7gq52gefCrsq5aznorpZVJdlGz1dEMcPGXaahZs
+          description: Refresh 토큰
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
