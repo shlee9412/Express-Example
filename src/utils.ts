@@ -1,7 +1,7 @@
-import { v4 as uuidV4, parse as parseUUID } from 'uuid';
 import { NextFunction, Request, Response } from 'express';
 import { DataSource } from 'typeorm';
 import { SHA256, enc } from 'crypto-js';
+import multer from 'multer';
 import jwt from 'jsonwebtoken';
 import _ from 'lodash';
 import os from 'os';
@@ -125,3 +125,11 @@ export const cacheMiddleware =
     if (enable) res.setHeader('Cache-Control', `public, max-age=${maxAge}`);
     next();
   };
+
+/** @description 업로드 미들웨어 */
+export const uploadMiddleware = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024
+  }
+});

@@ -5,5 +5,7 @@ select
   user_id userId,
   password password,
   user_name userName,
-  register_date registerDate
+  profile_img profileImg,
+  datetime(create_date, 'localtime') createDate,
+  datetime(update_date, 'localtime') updateDate
 from t_user;

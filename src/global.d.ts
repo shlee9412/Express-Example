@@ -21,11 +21,15 @@ declare global {
   interface UserInfo {
     uuid: string;
     userId: string;
+    userName?: string;
+    profileImg?: string;
+    createDate: Date;
+    updateDate?: Date;
   }
 
   namespace Express {
     interface Request {
-      user: UserInfo;
+      user: Partial<UserInfo>;
     }
   }
 
@@ -40,6 +44,7 @@ declare global {
     userId: string;
     password: string;
     userName?: string;
+    profileImg?: Buffer;
   }
 
   interface LoginBody {
@@ -51,5 +56,6 @@ declare global {
     password: string;
     newPassword?: string;
     userName?: string;
+    profileImg?: string;
   }
 }

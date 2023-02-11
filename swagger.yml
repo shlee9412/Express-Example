@@ -18,7 +18,7 @@ paths:
       requestBody:
         description: 가입 정보
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               required:
@@ -37,6 +37,10 @@ paths:
                   type: string
                   example: test
                   description: 사용자 이름
+                profileImg:
+                  type: string
+                  description: 사용자 프로필 이미지 (최대 5MB)
+                  format: binary
         required: true
       responses:
         '200':
@@ -68,6 +72,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserInfo'
+        '404':
+          description: 사용자 조회 불가
+        '500':
+          description: 서버 에러
+  /api/v1/users/profileimg/{uuid}:
+    get:
+      tags:
+        - Unauthorized
+      summary: 사용자 프로필 이미지 조회
+      parameters:
+        - name: uuid
+          in: path
+          description: 사용자 UUID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 사용자 프로필 이미지 조회 성공
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+                example: 사용자 프로필 이미지
+        '404':
+          description: 사용자 프로필 이미지 조회 불가
+        '500':
+          description: 서버 에러
   /api/v1/login:
     post:
       tags:
@@ -113,10 +146,11 @@ paths:
       tags:
         - Authorized
       summary: 본인 사용자 정보 수정
+      description: profileImg 필드의 값이 빈 문자열일 시 기존 프로필 이미지 삭제
       requestBody:
         description: 새 사용자 정보
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               required:
@@ -134,6 +168,10 @@ paths:
                   type: string
                   example: test2
                   description: 새 사용자 이름
+                profileImg:
+                  type: string
+                  description: 새 사용자 프로필 이미지 (최대 5MB)
+                  format: binary
         required: true
       responses:
         '200':
@@ -171,9 +209,13 @@ paths:
                     type: string
                     example: test
                     description: 사용자 이름
-                  registerDate:
+                  createDate:
                     type: string
-                    example: '2023-02-08T14:52:56Z'
+                    example: '2023-02-11T02:59:57.325Z'
+                    description: 가입 날짜
+                  updateDate:
+                    type: string
+                    example: '2023-02-11T03:03:30.986Z'
                     description: 가입 날짜
         '400':
           description: 요청 에러
@@ -212,10 +254,14 @@ components:
     UserInfo:
       type: object
       description: 사용자 정보
+      required:
+        - uuid
+        - userId
+        - createDate
       properties:
         uuid:
           type: string
-          example: 83182ee5bfa542ed8e5266dc4af565ca
+          example: 8d30daf1-e176-44a9-8312-6f09588a24f2
           description: 사용자 UUID
         userId:
           type: string
@@ -225,21 +271,32 @@ components:
           type: string
           example: test
           description: 사용자 이름
-        registerDate:
+        profileImg:
           type: string
-          example: '2023-02-08T14:52:56Z'
+          example: /api/v1/users/profileimg/8d30daf1e17644a983126f09588a24f2
+          description: 사용자 프로필 이미지 URL
+        createDate:
+          type: string
+          example: '2023-02-11T02:59:57.325Z'
           description: 가입 날짜
+        updateDate:
+          type: string
+          example: '2023-02-11T03:03:30.986Z'
+          description: 수정 날짜
     Tokens:
       type: object
       description: Access/Refresh 토큰 정보
+      required:
+        - accessToken
+        - refreshToken
       properties:
         accessToken:
           type: string
-          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzVG9rZW4iLCJ1c2VySW5mbyI6eyJ1dWlkIjoiZTk5ZjM5Y2U0NjUxNGY2MGJmZDZiOGI0NjM2ZjQ2ZWEiLCJ1c2VySWQiOiJ0ZXN0dXNlciJ9LCJpYXQiOjE2NzU5MzE3MjcsImV4cCI6MTY3NTkzNTMyN30.y1MpHjq9Bp7BCVcT7RCHRWvYp1qUlkimkO1wd3p4MDk
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzVG9rZW4iLCJ1c2VySW5mbyI6eyJ1dWlkIjoiOGQzMGRhZjEtZTE3Ni00NGE5LTgzMTItNmYwOTU4OGEyNGYyIiwidXNlcklkIjoidGVzdHVzZXIiLCJ1c2VyTmFtZSI6InRlc3QiLCJwcm9maWxlSW1nIjoiL2FwaS92MS91c2Vycy9wcm9maWxlaW1nLzhkMzBkYWYxZTE3NjQ0YTk4MzEyNmYwOTU4OGEyNGYyIiwiY3JlYXRlRGF0ZSI6IjIwMjMtMDItMTFUMDI6NTk6NTcuMzI1WiIsInVwZGF0ZURhdGUiOiIyMDIzLTAyLTExVDAzOjAzOjMwLjk4NloifSwiaWF0IjoxNjc2MDg1MTY4LCJleHAiOjE2NzYwODg3Njh9._h6nO7qptpjPGBCHh-omw8XB6u24RtS6PvY_e4BC8bo
           description: Access 토큰
         refreshToken:
           type: string
-          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoicmVmcmVzaFRva2VuIiwidXNlckluZm8iOnsidXVpZCI6ImU5OWYzOWNlNDY1MTRmNjBiZmQ2YjhiNDYzNmY0NmVhIiwidXNlcklkIjoidGVzdHVzZXIifSwiaWF0IjoxNjc1OTMxNzI3LCJleHAiOjE2NzYxOTA5Mjd9.boau7gq52gefCrsq5aznorpZVJdlGz1dEMcPGXaahZs
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoicmVmcmVzaFRva2VuIiwidXNlckluZm8iOnsidXVpZCI6IjhkMzBkYWYxLWUxNzYtNDRhOS04MzEyLTZmMDk1ODhhMjRmMiIsInVzZXJJZCI6InRlc3R1c2VyIiwidXNlck5hbWUiOiJ0ZXN0IiwicHJvZmlsZUltZyI6Ii9hcGkvdjEvdXNlcnMvcHJvZmlsZWltZy84ZDMwZGFmMWUxNzY0NGE5ODMxMjZmMDk1ODhhMjRmMiIsImNyZWF0ZURhdGUiOiIyMDIzLTAyLTExVDAyOjU5OjU3LjMyNVoiLCJ1cGRhdGVEYXRlIjoiMjAyMy0wMi0xMVQwMzowMzozMC45ODZaIn0sImlhdCI6MTY3NjA4NTE2OCwiZXhwIjoxNjc2MzQ0MzY4fQ.lH_IOXcpTNPIKBSQU5e1XN_VNQDk09Qs3Pk4Wd6Zwnc
           description: Refresh 토큰
   securitySchemes:
     bearerAuth:

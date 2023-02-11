@@ -38,7 +38,6 @@ const createExpressApp = async (dataSource: DataSource) => {
   app.use(express.urlencoded({ extended: false }));
   app.use(morgan('combined'));
   app.use('/api/v1', mainRouterV1);
-
   app.use(
     '/api/docs',
     basicAuthMiddleware({

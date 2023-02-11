@@ -1,31 +1,37 @@
-import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
-import { v4 as uuidV4, parse as parseUUID, stringify as stringifyUUID } from 'uuid';
+import { Column, Entity, Index } from 'typeorm';
+import CommonEntity from '@/entities/Common.entity';
 
 @Entity({ name: 't_user' })
 @Index(['userId', 'password'])
-class User {
-  @PrimaryColumn({
-    name: '_uuid',
+class User extends CommonEntity {
+  @Column({ name: 'user_id', type: 'varchar', length: 32, unique: true })
+  userId: string;
+
+  @Column({
+    name: 'password',
     type: 'blob',
-    length: 16,
+    length: 32,
     transformer: {
-      from: (value: Buffer) => stringifyUUID(value),
-      to: (value: string) => Buffer.from(parseUUID(value) as Uint8Array)
+      from: (value: Buffer) => value.toString('hex'),
+      to: (value: string) => Buffer.from(value, 'hex')
     }
   })
-  uuid?: string = uuidV4();
-
-  @Column({ name: 'user_id', type: 'varchar', length: 32, unique: true, nullable: false })
-  userId?: string;
-
-  @Column({ name: 'password', type: 'character', length: 64, nullable: false })
   password?: string;
 
-  @Column({ name: 'user_name', type: 'varchar', length: 32, nullable: true })
-  userName?: string;
+  @Column({ name: 'user_name', type: 'varchar', length: 32, nullable: true, default: 'NULL' })
+  userName?: string | null = null;
 
-  @Column({ name: 'register_date', type: 'datetime', nullable: false })
-  registerDate?: Date = new Date();
+  @Column({ name: 'profile_img', type: 'blob', length: 5 * 1024 * 1024, nullable: true, default: 'NULL' })
+  profileImg?: Buffer | null = null;
+
+  getUserInfo = (): UserInfo => ({
+    uuid: this.uuid,
+    userId: this.userId,
+    userName: this.userName || undefined,
+    profileImg: this.profileImg ? `/api/v1/users/profileimg/${this.uuid.replace(/-/g, '')}` : undefined,
+    createDate: this.createDate,
+    updateDate: this.updateDate || undefined
+  });
 }
 
 export default User;
