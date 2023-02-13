@@ -122,9 +122,6 @@ routerV2.get('/test', (req, res) => {
 });
 
 app.listen(8080);
-...
-
-app.listen(8080);
 ```
 
 ## 6. Node HTTP 서버 사용
