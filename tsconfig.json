@@ -1,9 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2016",
-    "lib": [
-      "es2017"
-    ],
+    "lib": ["es2017"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "commonjs",
@@ -11,9 +9,7 @@
     "moduleResolution": "node",
     "baseUrl": "./",
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"]
     },
     "resolveJsonModule": true,
     "allowJs": true,
@@ -23,10 +19,5 @@
     "skipLibCheck": true,
     "strictPropertyInitialization": false
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.js",
-    "src/**/*.json",
-    "esbuild.config.ts"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.json", "esbuild.config.ts"]
 }

@@ -51,7 +51,7 @@ const authorizedRouter = (dataSource: DataSource) => {
         { userId, password: sha256(password) },
         {
           password: newPassword ? sha256(newPassword) : sha256(password),
-          userName: userName || undefined,
+          userName: userName === '' ? null : userName,
           profileImg: profileImg || (profileImgValue === '' ? null : undefined),
           updateDate: new Date()
         }

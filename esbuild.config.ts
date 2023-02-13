@@ -1,7 +1,7 @@
 import esbuild from 'esbuild';
 import { nodeExternalsPlugin } from 'esbuild-node-externals';
 import fs from 'fs-extra';
-import path from 'path';
+import { resolve } from 'path';
 
 const appRoot = process.cwd();
 
@@ -12,17 +12,17 @@ const appRoot = process.cwd();
       bundle: true,
       minify: true,
       platform: 'node',
-      outfile: path.resolve(appRoot, 'dist', 'index.js'),
+      outfile: resolve(appRoot, 'dist', 'index.js'),
       plugins: [nodeExternalsPlugin()],
       alias: {
-        '@': path.resolve(appRoot, 'src')
+        '@': resolve(appRoot, 'src')
       }
     });
 
-    const outputDirPath = path.resolve(appRoot, 'output');
+    const outputDirPath = resolve(appRoot, 'output');
     fs.mkdirSync(outputDirPath);
     ['package.json', 'package-lock.json', '.npmrc', 'swagger.yml', '.env', 'dist'].forEach(d => {
-      fs.copySync(path.resolve(appRoot, d), path.resolve(outputDirPath, d));
+      fs.copySync(resolve(appRoot, d), resolve(outputDirPath, d));
     });
   } catch (err) {
     console.error(err);

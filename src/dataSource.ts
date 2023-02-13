@@ -14,8 +14,7 @@ const createDataSource = async () => {
     entities: [User]
   });
 
-  await AppDataSource.initialize();
-  return AppDataSource;
+  return AppDataSource.initialize();
 };
 
 export default createDataSource;

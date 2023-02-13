@@ -1,13 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import morgan from 'morgan';
 import { DataSource } from 'typeorm';
-import moment from 'moment';
 import swaggerUiRouter from '@/routers/swagger';
 import authorizedRouter from '@/routers/authorized';
 import unauthorizedRouter from '@/routers/unauthorized';
-import { basicAuthMiddleware } from '@/utils';
+import { basicAuthMiddleware, loggerMiddleware } from '@/utils';
 
 const isDevEnv = process.env.NODE_ENV !== 'production';
 const { SWAGGER_BASICAUTH_USER, SWAGGER_BASICAUTH_PASSWORD, SWAGGER_BASICAUTH_ENABLE } = process.env;
@@ -20,15 +18,14 @@ const createExpressApp = async (dataSource: DataSource) => {
   const app = express();
   const mainRouterV1 = express.Router();
 
-  morgan.token('date', () => moment().format('YYYY-MM-DD HH:mm:ss.SSS'));
-
   if (isDevEnv) {
     app.use(cors());
     app.use(
       helmet({
         hidePoweredBy: false,
         crossOriginResourcePolicy: false,
-        contentSecurityPolicy: false
+        contentSecurityPolicy: false,
+        referrerPolicy: false
       })
     );
   } else {
@@ -36,7 +33,7 @@ const createExpressApp = async (dataSource: DataSource) => {
   }
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
-  app.use(morgan('combined'));
+  app.use(loggerMiddleware());
   app.use('/api/v1', mainRouterV1);
   app.use(
     '/api/docs',

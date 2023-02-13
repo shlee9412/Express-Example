@@ -80,7 +80,7 @@ const unauthorizedRouter = (dataSource: DataSource) => {
       const { userId, password } = req.body as LoginBody;
 
       const userData = await userRepository.findOne({
-        select: { uuid: true, userId: true, userName: true, profileImg: true, createDate: true },
+        select: { uuid: true, userId: true, userName: true, profileImg: true, createDate: true, updateDate: true },
         where: { userId, password: sha256(password) }
       });
       if (!userData) return res.sendStatus(401);

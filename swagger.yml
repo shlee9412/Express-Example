@@ -35,7 +35,7 @@ paths:
                   description: 사용자 비밀번호
                 userName:
                   type: string
-                  example: test
+                  example: 테스트
                   description: 사용자 이름
                 profileImg:
                   type: string
@@ -146,7 +146,9 @@ paths:
       tags:
         - Authorized
       summary: 본인 사용자 정보 수정
-      description: profileImg 필드의 값이 빈 문자열일 시 기존 프로필 이미지 삭제
+      description: |
+        - userName 필드의 값이 빈 문자열일 시 기존 사용자 이름 삭제
+        - profileImg 필드의 값이 빈 문자열일 시 기존 프로필 이미지 삭제
       requestBody:
         description: 새 사용자 정보
         content:
@@ -166,7 +168,7 @@ paths:
                   description: 새 비밀번호
                 userName:
                   type: string
-                  example: test2
+                  example: 테스트2
                   description: 새 사용자 이름
                 profileImg:
                   type: string
@@ -207,7 +209,7 @@ paths:
                     description: 사용자 아이디
                   userName:
                     type: string
-                    example: test
+                    example: 테스트
                     description: 사용자 이름
                   createDate:
                     type: string
@@ -230,7 +232,8 @@ paths:
       tags:
         - Authorized
       summary: Access 토큰 갱신
-      description: Authorization 헤더에 Refresh 토큰 필요
+      description: |
+        - Authorization 헤더에 Refresh 토큰 필요
       responses:
         '200':
           description: Access 토큰 갱신 성공
@@ -269,7 +272,7 @@ components:
           description: 사용자 아이디
         userName:
           type: string
-          example: test
+          example: 테스트
           description: 사용자 이름
         profileImg:
           type: string

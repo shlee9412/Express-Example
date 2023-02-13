@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { DataSource } from 'typeorm';
 import { SHA256, enc } from 'crypto-js';
+import moment from 'moment';
+import morgan from 'morgan';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
 import _ from 'lodash';
@@ -9,6 +11,9 @@ import User from '@/entities/User.entity';
 
 /** @description JWT Secret Key */
 const jwtSecret = 'B0762748EEE042349C2BF74D2FFAC66C';
+
+/** @description Morgan 기본 포맷 */
+const morganDefaultFormat = `[:date[clf]] :remote-addr - :remote-user ":method :url HTTP/:http-version" :status :res[content-length] ":referrer"`;
 
 /**
  * @description IPV4 조회
@@ -59,6 +64,16 @@ export const requestHandler = (cb: (req: Request, res: Response) => any | Promis
     console.error(err);
     res.sendStatus(500);
   }
+};
+
+/**
+ * @description Logger 미들웨어 생성
+ * @param format Morgan 로그 포맷
+ * @default format `[:date[clf]] :remote-addr - :remote-user ":method :url HTTP/:http-version" :status :res[content-length] ":referrer"`
+ */
+export const loggerMiddleware = (format: string = morganDefaultFormat) => {
+  morgan.token('date', () => moment().format('YYYY-MM-DD HH:mm:ss.SSS'));
+  return morgan(format);
 };
 
 /**
