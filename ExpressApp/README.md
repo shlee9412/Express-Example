@@ -34,7 +34,7 @@ app.put('/', (req, res) => {
 });
 ```
 
-- D (Delete): DELET
+- D (Delete): DELETE
 
 ```js
 app.delete('/', (req, res) => {
