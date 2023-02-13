@@ -42,48 +42,11 @@ app.delete('/', (req, res) => {
 });
 ```
 
-## 3. Request, Response Object
-
-- Request Object
+## 3. 미들웨어
 
 ```js
-app.post('/:param', (req, res) => {
-  const {
-    headers, // 요청 헤더 정보
-    query, // 쿼리 스트링 Object
-    params, // URL 파라미터
-    body // Request Body (JSON, Form Data)
-  } = req;
-
-  res.sendStatus(200);
-});
-```
-
-- Response Object
-
-```js
-app.post('/', (req, res) => {
-  res.setHeader('Content-Type', 'application/json'); // 응답 헤더 설정
-  const headers = res.getHeaders(); // 응답 헤더 정보
-
-  res.status(200); // 응답 상태 코드 설정
-
-  /** 응답 (Handler 하나 당 아래 응답 방법 중 하나만 사용 가능) */
-  res.sendStatus(200); // 1. 상태 코드만 응답
-  res.send(`<h1>Hello World !!</h1>`); // 2. 텍스트 or 바이너리 데이터 전송
-  res.json({ result: true, msg: 'SUCCESS' }); // 3. JSON 오브젝트 전송
-});
-```
-
-## 4. 미들웨어
-
-```js
-import express from 'express';
-
-const app = express();
-
-app.use(express.json()); // Request Body 파싱
-app.use(express.urlencoded({ extended: false })); // Form Data 파싱
+app.use(express.json()); // Request Body JSON 파싱
+app.use(express.urlencoded({ extended: false })); // Request Body Form Data 파싱
 app.use((req, res, next) => {
   const { query, params, body } = req;
   console.log({ query, params, body });
@@ -95,6 +58,47 @@ app.get('/', (req, res) => {
 });
 
 app.listen(8080);
+```
+
+## 4. Request, Response Object
+
+- Request Object
+
+```js
+app.post('/:param', (req, res) => {
+  const {
+    headers, // 요청 헤더 정보
+    query, // 쿼리 스트링 Object
+    params, // URL 파라미터
+    body // Request Body (JSON, Form Data)
+  } = req;
+  console.log({ headers, query, params, body });
+
+  res.sendStatus(200);
+});
+```
+
+- Response Object
+
+```js
+import express from 'express';
+import path from 'path';
+
+...
+
+app.post('/', (req, res) => {
+  res.setHeader('Content-Type', 'application/json'); // 응답 헤더 설정
+  const headers = res.getHeaders(); // 응답 헤더 정보
+  console.log(headers);
+
+  res.status(200); // 응답 상태 코드 설정
+
+  /** 응답 (Handler 하나 당 아래 응답 방법 중 하나만 사용 가능) */
+  res.sendStatus(200); // 1. 상태 코드만 응답
+  res.send(`<h1>Hello World !!</h1>`); // 2. 텍스트 or 바이너리 데이터 전송
+  res.setHeader('Content-Type', 'image/png').sendFile(path.resolve(process.cwd(), 'img', 'sample.png')); // 3. 해당 경로 파일 바이너리 데이터 전송
+  res.json({ result: true, msg: 'SUCCESS' }); // 4. JSON 오브젝트 전송
+});
 ```
 
 ## 5. 라우터
