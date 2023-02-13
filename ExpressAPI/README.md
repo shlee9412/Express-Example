@@ -127,7 +127,7 @@ app.listen(8080);
 app.listen(8080);
 ```
 
-## 6. Node HTTP 서버로 실행
+## 6. Node HTTP 서버 사용
 
 ```js
 import express from 'express';
