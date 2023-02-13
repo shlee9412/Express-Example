@@ -14,9 +14,6 @@ swaggerDocument.servers = [...swaggerDocument.servers, ...getIpv4().map(d => ({ 
 const router = Router();
 
 /** @description Swagger 라우터 생성 */
-const swaggerUiRouter = () => {
-  router.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }));
-  return router;
-};
+const swaggerUiRouter = () => router.use(swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: false }));
 
 export default swaggerUiRouter;
