@@ -47,7 +47,7 @@ const unauthorizedRouter = (dataSource: DataSource) => {
     '/users/:userUUID',
     requestHandler(async (req, res) => {
       const userUUID = stringifyUUID(Buffer.from(req.params.userUUID.replace(/-/g, ''), 'hex'));
-      console.log('resheader', res.getHeaders());
+
       const userData = await userRepository.findOne({
         select: { uuid: true, userId: true, userName: true, profileImg: true, createDate: true, updateDate: true },
         where: { uuid: userUUID }
